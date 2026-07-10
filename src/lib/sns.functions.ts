@@ -15,7 +15,7 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
     const region = process.env.AWS_SNS_REGION || process.env.AWS_REGION;
     const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
     const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-    const topicArn = process.env.AWS_SNS_TOPIC_ARN;
+    // topic publishing disabled — SMS is sent directly to reporter's phone only
 
     if (!region || !accessKeyId || !secretAccessKey) {
       throw new Error("AWS credentials for SNS are not configured.");
@@ -80,25 +80,7 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
       }
     }
 
-    // Also publish to topic so subscribed admins/officers receive it
-    if (topicArn) {
-      try {
-        const res = await sns.send(
-          new PublishCommand({
-            TopicArn: topicArn,
-            Subject: `Complaint ${issue.ticket_id} → ${data.status}`,
-            Message: smsBody,
-          }),
-        );
-        results.push({ channel: "topic", ok: true, messageId: res.MessageId });
-      } catch (err) {
-        results.push({
-          channel: "topic",
-          ok: false,
-          error: err instanceof Error ? err.message : String(err),
-        });
-      }
-    }
+    // Note: topic publish intentionally disabled — SMS-to-phone only.
 
     console.log("[SNS notify]", {
       issueId: data.issueId,
