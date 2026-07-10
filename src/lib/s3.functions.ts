@@ -15,6 +15,8 @@ async function getPresigner() {
   const client = new S3Client({
     region,
     credentials: { accessKeyId, secretAccessKey },
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
   });
   return { client, bucket, region };
 }
