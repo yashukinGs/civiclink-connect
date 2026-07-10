@@ -5,6 +5,7 @@ import {
   type Attachment,
 } from "@/lib/issues";
 import type { IssuePriority, IssueStatus } from "@/lib/demo-data";
+import { notifyIssueStatusChanged } from "@/lib/sns.functions";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -249,7 +250,6 @@ export async function setIssueStatus(issueId: string, status: IssueStatus) {
   const { error } = await supabase.from("issues").update({ status }).eq("id", issueId);
   if (error) throw error;
   try {
-    const { notifyIssueStatusChanged } = await import("@/lib/sns.functions");
     await notifyIssueStatusChanged({ data: { issueId, status } });
   } catch (err) {
     console.error("SNS notification failed:", err);
