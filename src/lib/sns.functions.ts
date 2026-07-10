@@ -80,25 +80,7 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
       }
     }
 
-    // Also publish to topic so subscribed admins/officers receive it
-    if (topicArn) {
-      try {
-        const res = await sns.send(
-          new PublishCommand({
-            TopicArn: topicArn,
-            Subject: `Complaint ${issue.ticket_id} → ${data.status}`,
-            Message: smsBody,
-          }),
-        );
-        results.push({ channel: "topic", ok: true, messageId: res.MessageId });
-      } catch (err) {
-        results.push({
-          channel: "topic",
-          ok: false,
-          error: err instanceof Error ? err.message : String(err),
-        });
-      }
-    }
+    // Note: topic publish intentionally disabled — SMS-to-phone only.
 
     console.log("[SNS notify]", {
       issueId: data.issueId,
