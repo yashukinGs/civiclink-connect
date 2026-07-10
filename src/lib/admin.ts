@@ -5,6 +5,7 @@ import {
   type Attachment,
 } from "@/lib/issues";
 import type { IssuePriority, IssueStatus } from "@/lib/demo-data";
+import { notifyIssueStatusChanged } from "@/lib/sns.functions";
 
 // ---------------------------------------------------------------------------
 // Types
