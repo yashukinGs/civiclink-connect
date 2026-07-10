@@ -114,6 +114,13 @@ export async function uploadIssueFile(
     data: { fileName: file.name, contentType: file.type || "application/octet-stream" },
   });
 
+  console.info("[S3 upload] starting", {
+    key,
+    fileName: file.name,
+    size: file.size,
+    type: file.type,
+  });
+
   await new Promise<void>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", uploadUrl);
@@ -125,13 +132,52 @@ export async function uploadIssueFile(
     };
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
+        console.info("[S3 upload] success", { key, status: xhr.status });
         onProgress?.(100);
         resolve();
       } else {
-        reject(new Error("Upload to S3 failed. Check bucket CORS and permissions."));
+        // Parse AWS XML error body (<Code>, <Message>, <RequestId>) if present.
+        const body = xhr.responseText || "";
+        const pick = (tag: string) =>
+          new RegExp(`<${tag}>([^<]+)</${tag}>`, "i").exec(body)?.[1];
+        const awsCode = pick("Code");
+        const awsMessage = pick("Message");
+        const requestId = pick("RequestId");
+        console.error("[S3 upload] failed", {
+          key,
+          status: xhr.status,
+          statusText: xhr.statusText,
+          awsCode,
+          awsMessage,
+          requestId,
+          rawBody: body.slice(0, 800),
+        });
+        reject(
+          new Error(
+            `S3 upload failed [${xhr.status}${xhr.statusText ? " " + xhr.statusText : ""}]` +
+              (awsCode ? ` — ${awsCode}` : "") +
+              (awsMessage ? `: ${awsMessage}` : "") +
+              (requestId ? ` (RequestId ${requestId})` : ""),
+          ),
+        );
       }
     };
-    xhr.onerror = () => reject(new Error("Upload to S3 failed. Please try again."));
+    xhr.onerror = () => {
+      console.error("[S3 upload] network error / CORS blocked", {
+        key,
+        status: xhr.status,
+        statusText: xhr.statusText,
+      });
+      reject(
+        new Error(
+          "S3 upload network error. This usually means the bucket CORS is not configured to allow PUT from this origin, or the presigned URL was rejected before a response body was returned.",
+        ),
+      );
+    };
+    xhr.ontimeout = () => {
+      console.error("[S3 upload] timeout", { key });
+      reject(new Error("S3 upload timed out."));
+    };
     xhr.send(file);
   });
 
