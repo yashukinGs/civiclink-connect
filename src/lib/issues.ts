@@ -105,27 +105,19 @@ export function validateFile(file: File): string | null {
 // Backwards-compatible alias.
 export const validateImageFile = validateFile;
 
-// Upload one file into the user's folder with real progress; returns an Attachment.
+// Upload one file to AWS S3 with progress; returns an Attachment where `path` is the S3 object key.
 export async function uploadIssueFile(
   file: File,
   onProgress?: (percent: number) => void,
 ): Promise<Attachment> {
-  const { data: sessionData } = await supabase.auth.getSession();
-  const session = sessionData.session;
-  if (!session) throw new Error("You must be signed in to upload.");
-
-  const ext = file.name.split(".").pop()?.toLowerCase() || "bin";
-  const path = `${session.user.id}/${crypto.randomUUID()}.${ext}`;
-  const endpoint = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`;
+  const { uploadUrl, key } = await getS3UploadUrl({
+    data: { fileName: file.name, contentType: file.type || "application/octet-stream" },
+  });
 
   await new Promise<void>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", endpoint);
-    xhr.setRequestHeader("authorization", `Bearer ${session.access_token}`);
-    xhr.setRequestHeader("apikey", import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
-    xhr.setRequestHeader("x-upsert", "false");
-    xhr.setRequestHeader("cache-control", "3600");
-    if (file.type) xhr.setRequestHeader("content-type", file.type);
+    xhr.open("PUT", uploadUrl);
+    if (file.type) xhr.setRequestHeader("Content-Type", file.type);
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable && onProgress) {
         onProgress(Math.round((e.loaded / e.total) * 100));
@@ -136,30 +128,36 @@ export async function uploadIssueFile(
         onProgress?.(100);
         resolve();
       } else {
-        reject(new Error("Upload failed. Please try again."));
+        reject(new Error("Upload to S3 failed. Check bucket CORS and permissions."));
       }
     };
-    xhr.onerror = () => reject(new Error("Upload failed. Please try again."));
+    xhr.onerror = () => reject(new Error("Upload to S3 failed. Please try again."));
     xhr.send(file);
   });
 
-  return { path, name: file.name, type: file.type };
+  return { path: key, name: file.name, type: file.type };
 }
 
 export async function removeIssueFile(path: string): Promise<void> {
-  await supabase.storage.from(BUCKET).remove([path]);
+  try {
+    await deleteS3Object({ data: { key: path } });
+  } catch (err) {
+    console.error("Failed to delete S3 object:", err);
+  }
 }
 
 // Backwards-compatible alias.
 export const removeIssueImage = removeIssueFile;
 
-// Generate a signed URL for a stored file path (private bucket).
+// Generate a signed URL for a stored S3 object key.
 export async function getSignedFileUrl(path: string): Promise<string | null> {
-  const { data, error } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(path, 60 * 60);
-  if (error) return null;
-  return data?.signedUrl ?? null;
+  try {
+    const { url } = await getS3DownloadUrl({ data: { key: path } });
+    return url;
+  } catch (err) {
+    console.error("Failed to sign S3 URL:", err);
+    return null;
+  }
 }
 
 // Backwards-compatible alias.
