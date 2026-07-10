@@ -72,6 +72,7 @@ function ReportIssue() {
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selectedFileKeysRef = useRef(new Set<string>());
+  const uploadingFileIdsRef = useRef(new Set<string>());
 
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
@@ -96,6 +97,8 @@ function ReportIssue() {
   };
 
   const uploadOne = async (item: SelectedFile) => {
+    if (uploadingFileIdsRef.current.has(item.id)) return;
+    uploadingFileIdsRef.current.add(item.id);
     updateFile(item.id, { status: "uploading", progress: 0 });
     try {
       const attachment = await uploadIssueFile(item.file, (p) =>
@@ -110,6 +113,8 @@ function ReportIssue() {
           ? `Could not upload "${item.file.name}": ${err.message}`
           : `Could not upload "${item.file.name}". You can retry.`,
       );
+    } finally {
+      uploadingFileIdsRef.current.delete(item.id);
     }
   };
 
@@ -187,6 +192,7 @@ function ReportIssue() {
     setLocation("");
     setIsAnonymous(false);
     selectedFileKeysRef.current.clear();
+    uploadingFileIdsRef.current.clear();
     setFiles([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
