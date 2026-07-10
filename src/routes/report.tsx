@@ -100,9 +100,14 @@ function ReportIssue() {
         updateFile(item.id, { progress: p }),
       );
       updateFile(item.id, { status: "done", progress: 100, attachment });
-    } catch {
+    } catch (err) {
       updateFile(item.id, { status: "error" });
-      toast.error(`Could not upload "${item.file.name}". You can retry.`);
+      console.error("Issue attachment upload failed:", err);
+      toast.error(
+        err instanceof Error
+          ? `Could not upload "${item.file.name}": ${err.message}`
+          : `Could not upload "${item.file.name}". You can retry.`,
+      );
     }
   };
 
