@@ -9,38 +9,461 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WorksRouteImport } from './routes/works'
+import { Route as TrackRouteImport } from './routes/track'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ReportRouteImport } from './routes/report'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CommunityRouteImport } from './routes/community'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as AdminDashboardRouteImport } from './routes/admin-dashboard'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminDashboardIndexRouteImport } from './routes/admin-dashboard.index'
+import { Route as AdminDashboardUsersRouteImport } from './routes/admin-dashboard.users'
+import { Route as AdminDashboardOfficersRouteImport } from './routes/admin-dashboard.officers'
+import { Route as AdminDashboardComplaintsRouteImport } from './routes/admin-dashboard.complaints'
+import { Route as AdminDashboardAnalyticsRouteImport } from './routes/admin-dashboard.analytics'
 
+const WorksRoute = WorksRouteImport.update({
+  id: '/works',
+  path: '/works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackRoute = TrackRouteImport.update({
+  id: '/track',
+  path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/admin-dashboard',
+  path: '/admin-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminDashboardRoute,
+} as any)
+const AdminDashboardUsersRoute = AdminDashboardUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminDashboardRoute,
+} as any)
+const AdminDashboardOfficersRoute = AdminDashboardOfficersRouteImport.update({
+  id: '/officers',
+  path: '/officers',
+  getParentRoute: () => AdminDashboardRoute,
+} as any)
+const AdminDashboardComplaintsRoute =
+  AdminDashboardComplaintsRouteImport.update({
+    id: '/complaints',
+    path: '/complaints',
+    getParentRoute: () => AdminDashboardRoute,
+  } as any)
+const AdminDashboardAnalyticsRoute = AdminDashboardAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminDashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/admin-dashboard': typeof AdminDashboardRouteWithChildren
+  '/analytics': typeof AnalyticsRoute
+  '/community': typeof CommunityRoute
+  '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
+  '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/register': typeof RegisterRoute
+  '/report': typeof ReportRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
+  '/track': typeof TrackRoute
+  '/works': typeof WorksRoute
+  '/admin-dashboard/analytics': typeof AdminDashboardAnalyticsRoute
+  '/admin-dashboard/complaints': typeof AdminDashboardComplaintsRoute
+  '/admin-dashboard/officers': typeof AdminDashboardOfficersRoute
+  '/admin-dashboard/users': typeof AdminDashboardUsersRoute
+  '/admin-dashboard/': typeof AdminDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/analytics': typeof AnalyticsRoute
+  '/community': typeof CommunityRoute
+  '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
+  '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/register': typeof RegisterRoute
+  '/report': typeof ReportRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
+  '/track': typeof TrackRoute
+  '/works': typeof WorksRoute
+  '/admin-dashboard/analytics': typeof AdminDashboardAnalyticsRoute
+  '/admin-dashboard/complaints': typeof AdminDashboardComplaintsRoute
+  '/admin-dashboard/officers': typeof AdminDashboardOfficersRoute
+  '/admin-dashboard/users': typeof AdminDashboardUsersRoute
+  '/admin-dashboard': typeof AdminDashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/admin-dashboard': typeof AdminDashboardRouteWithChildren
+  '/analytics': typeof AnalyticsRoute
+  '/community': typeof CommunityRoute
+  '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
+  '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/register': typeof RegisterRoute
+  '/report': typeof ReportRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
+  '/track': typeof TrackRoute
+  '/works': typeof WorksRoute
+  '/admin-dashboard/analytics': typeof AdminDashboardAnalyticsRoute
+  '/admin-dashboard/complaints': typeof AdminDashboardComplaintsRoute
+  '/admin-dashboard/officers': typeof AdminDashboardOfficersRoute
+  '/admin-dashboard/users': typeof AdminDashboardUsersRoute
+  '/admin-dashboard/': typeof AdminDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/admin-dashboard'
+    | '/analytics'
+    | '/community'
+    | '/contact'
+    | '/dashboard'
+    | '/faq'
+    | '/forgot-password'
+    | '/login'
+    | '/privacy'
+    | '/register'
+    | '/report'
+    | '/reset-password'
+    | '/sitemap.xml'
+    | '/terms'
+    | '/track'
+    | '/works'
+    | '/admin-dashboard/analytics'
+    | '/admin-dashboard/complaints'
+    | '/admin-dashboard/officers'
+    | '/admin-dashboard/users'
+    | '/admin-dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/analytics'
+    | '/community'
+    | '/contact'
+    | '/dashboard'
+    | '/faq'
+    | '/forgot-password'
+    | '/login'
+    | '/privacy'
+    | '/register'
+    | '/report'
+    | '/reset-password'
+    | '/sitemap.xml'
+    | '/terms'
+    | '/track'
+    | '/works'
+    | '/admin-dashboard/analytics'
+    | '/admin-dashboard/complaints'
+    | '/admin-dashboard/officers'
+    | '/admin-dashboard/users'
+    | '/admin-dashboard'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/admin-dashboard'
+    | '/analytics'
+    | '/community'
+    | '/contact'
+    | '/dashboard'
+    | '/faq'
+    | '/forgot-password'
+    | '/login'
+    | '/privacy'
+    | '/register'
+    | '/report'
+    | '/reset-password'
+    | '/sitemap.xml'
+    | '/terms'
+    | '/track'
+    | '/works'
+    | '/admin-dashboard/analytics'
+    | '/admin-dashboard/complaints'
+    | '/admin-dashboard/officers'
+    | '/admin-dashboard/users'
+    | '/admin-dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
+  AdminDashboardRoute: typeof AdminDashboardRouteWithChildren
+  AnalyticsRoute: typeof AnalyticsRoute
+  CommunityRoute: typeof CommunityRoute
+  ContactRoute: typeof ContactRoute
+  DashboardRoute: typeof DashboardRoute
+  FaqRoute: typeof FaqRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RegisterRoute: typeof RegisterRoute
+  ReportRoute: typeof ReportRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
+  TrackRoute: typeof TrackRoute
+  WorksRoute: typeof WorksRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/works': {
+      id: '/works'
+      path: '/works'
+      fullPath: '/works'
+      preLoaderRoute: typeof WorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track': {
+      id: '/track'
+      path: '/track'
+      fullPath: '/track'
+      preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-dashboard': {
+      id: '/admin-dashboard'
+      path: '/admin-dashboard'
+      fullPath: '/admin-dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +471,84 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-dashboard/': {
+      id: '/admin-dashboard/'
+      path: '/'
+      fullPath: '/admin-dashboard/'
+      preLoaderRoute: typeof AdminDashboardIndexRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin-dashboard/users': {
+      id: '/admin-dashboard/users'
+      path: '/users'
+      fullPath: '/admin-dashboard/users'
+      preLoaderRoute: typeof AdminDashboardUsersRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin-dashboard/officers': {
+      id: '/admin-dashboard/officers'
+      path: '/officers'
+      fullPath: '/admin-dashboard/officers'
+      preLoaderRoute: typeof AdminDashboardOfficersRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin-dashboard/complaints': {
+      id: '/admin-dashboard/complaints'
+      path: '/complaints'
+      fullPath: '/admin-dashboard/complaints'
+      preLoaderRoute: typeof AdminDashboardComplaintsRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin-dashboard/analytics': {
+      id: '/admin-dashboard/analytics'
+      path: '/analytics'
+      fullPath: '/admin-dashboard/analytics'
+      preLoaderRoute: typeof AdminDashboardAnalyticsRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
   }
 }
 
+interface AdminDashboardRouteChildren {
+  AdminDashboardAnalyticsRoute: typeof AdminDashboardAnalyticsRoute
+  AdminDashboardComplaintsRoute: typeof AdminDashboardComplaintsRoute
+  AdminDashboardOfficersRoute: typeof AdminDashboardOfficersRoute
+  AdminDashboardUsersRoute: typeof AdminDashboardUsersRoute
+  AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
+}
+
+const AdminDashboardRouteChildren: AdminDashboardRouteChildren = {
+  AdminDashboardAnalyticsRoute: AdminDashboardAnalyticsRoute,
+  AdminDashboardComplaintsRoute: AdminDashboardComplaintsRoute,
+  AdminDashboardOfficersRoute: AdminDashboardOfficersRoute,
+  AdminDashboardUsersRoute: AdminDashboardUsersRoute,
+  AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+}
+
+const AdminDashboardRouteWithChildren = AdminDashboardRoute._addFileChildren(
+  AdminDashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
+  AdminDashboardRoute: AdminDashboardRouteWithChildren,
+  AnalyticsRoute: AnalyticsRoute,
+  CommunityRoute: CommunityRoute,
+  ContactRoute: ContactRoute,
+  DashboardRoute: DashboardRoute,
+  FaqRoute: FaqRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
+  RegisterRoute: RegisterRoute,
+  ReportRoute: ReportRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
+  TrackRoute: TrackRoute,
+  WorksRoute: WorksRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
