@@ -15,7 +15,7 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
     const region = process.env.AWS_SNS_REGION || process.env.AWS_REGION;
     const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
     const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-    const topicArn = process.env.AWS_SNS_TOPIC_ARN;
+    // topic publishing disabled — SMS is sent directly to reporter's phone only
 
     if (!region || !accessKeyId || !secretAccessKey) {
       throw new Error("AWS credentials for SNS are not configured.");
