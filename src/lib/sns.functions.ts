@@ -15,7 +15,7 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
     const region = process.env.AWS_SNS_REGION || process.env.AWS_REGION;
     const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
     const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-    // topic publishing disabled — SMS is sent directly to reporter's phone only
+    const topicArn = process.env.AWS_SNS_TOPIC_ARN;
 
     if (!region || !accessKeyId || !secretAccessKey) {
       throw new Error("AWS credentials for SNS are not configured.");
@@ -31,14 +31,14 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
     if (issueErr) throw new Error(issueErr.message);
     if (!issue) throw new Error("Issue not found");
 
-    let reporterPhone: string | null = null;
+    let reporterEmail: string | null = null;
     if (issue.user_id) {
       const { data: profile } = await supabaseAdmin
         .from("profiles")
-        .select("mobile")
+        .select("email")
         .eq("id", issue.user_id)
         .maybeSingle();
-      reporterPhone = profile?.mobile ?? null;
+      reporterEmail = profile?.email ?? null;
     }
 
     const sns = new SNSClient({
@@ -46,56 +46,42 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
       credentials: { accessKeyId, secretAccessKey },
     });
 
-    const smsBody = `CivicConnect: Your complaint ${issue.ticket_id} status is now "${data.status}". - ${issue.title}`;
+    const subject = `CivicConnect: Complaint ${issue.ticket_id} status updated`;
+    const body = `Hello,\n\nYour complaint "${issue.title}" (${issue.ticket_id}) status has been updated to "${data.status}".\n\n— CivicConnect`;
 
     const results: { channel: string; ok: boolean; error?: string; messageId?: string }[] = [];
 
-    // Direct SMS to reporter's phone (if E.164)
-    if (reporterPhone) {
-      const phone = normalizePhone(reporterPhone);
-      if (phone) {
-        try {
-          const res = await sns.send(
-            new PublishCommand({
-              PhoneNumber: phone,
-              Message: smsBody,
-              MessageAttributes: {
-                "AWS.SNS.SMS.SMSType": {
-                  DataType: "String",
-                  StringValue: "Transactional",
-                },
-              },
-            }),
-          );
-          results.push({ channel: "sms", ok: true, messageId: res.MessageId });
-        } catch (err) {
-          results.push({
-            channel: "sms",
-            ok: false,
-            error: err instanceof Error ? err.message : String(err),
-          });
-        }
-      } else {
-        results.push({ channel: "sms", ok: false, error: "Invalid phone format" });
+    // Publish to SNS topic (email subscribers receive notification)
+    if (topicArn) {
+      try {
+        const res = await sns.send(
+          new PublishCommand({
+            TopicArn: topicArn,
+            Subject: subject,
+            Message: body,
+            MessageAttributes: reporterEmail
+              ? {
+                  reporterEmail: { DataType: "String", StringValue: reporterEmail },
+                }
+              : undefined,
+          }),
+        );
+        results.push({ channel: "topic", ok: true, messageId: res.MessageId });
+      } catch (err) {
+        results.push({
+          channel: "topic",
+          ok: false,
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
     }
-
-    // Note: topic publish intentionally disabled — SMS-to-phone only.
 
     console.log("[SNS notify]", {
       issueId: data.issueId,
       ticketId: issue.ticket_id,
       status: data.status,
-      phone: reporterPhone ? reporterPhone.slice(-4) : null,
+      email: reporterEmail,
       results,
     });
     return { results };
   });
-
-function normalizePhone(raw: string): string | null {
-  const trimmed = raw.trim().replace(/[\s-]/g, "");
-  if (/^\+\d{8,15}$/.test(trimmed)) return trimmed;
-  // If it's a 10-digit Indian mobile, default to +91
-  if (/^\d{10}$/.test(trimmed)) return `+91${trimmed}`;
-  return null;
-}
