@@ -1,5 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
+import {
+  PublishCommand,
+  SNSClient,
+  SubscribeCommand,
+  SetSubscriptionAttributesCommand,
+} from "@aws-sdk/client-sns";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -20,6 +25,9 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
     if (!region || !accessKeyId || !secretAccessKey) {
       throw new Error("AWS credentials for SNS are not configured.");
     }
+    if (!topicArn) {
+      throw new Error("AWS_SNS_TOPIC_ARN is not configured.");
+    }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -38,7 +46,7 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
         .select("email")
         .eq("id", issue.user_id)
         .maybeSingle();
-      reporterEmail = profile?.email ?? null;
+      reporterEmail = profile?.email?.trim() || null;
     }
 
     const sns = new SNSClient({
@@ -46,34 +54,87 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
       credentials: { accessKeyId, secretAccessKey },
     });
 
-    const subject = `CivicConnect: Complaint ${issue.ticket_id} status updated`;
-    const body = `Hello,\n\nYour complaint "${issue.title}" (${issue.ticket_id}) status has been updated to "${data.status}".\n\n— CivicConnect`;
+    const results: {
+      channel: string;
+      ok: boolean;
+      error?: string;
+      messageId?: string;
+      info?: string;
+    }[] = [];
 
-    const results: { channel: string; ok: boolean; error?: string; messageId?: string }[] = [];
-
-    // Publish to SNS topic (email subscribers receive notification)
-    if (topicArn) {
+    // 1) Ensure reporter's email is subscribed to the topic with a filter policy
+    //    so only their notifications reach them. Subscribe is idempotent —
+    //    calling it again returns the existing SubscriptionArn.
+    if (reporterEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reporterEmail)) {
       try {
-        const res = await sns.send(
-          new PublishCommand({
+        const sub = await sns.send(
+          new SubscribeCommand({
             TopicArn: topicArn,
-            Subject: subject,
-            Message: body,
-            MessageAttributes: reporterEmail
-              ? {
-                  reporterEmail: { DataType: "String", StringValue: reporterEmail },
-                }
-              : undefined,
+            Protocol: "email",
+            Endpoint: reporterEmail,
+            ReturnSubscriptionArn: true,
+            Attributes: {
+              FilterPolicy: JSON.stringify({ reporterEmail: [reporterEmail] }),
+              FilterPolicyScope: "MessageAttributes",
+            },
           }),
         );
-        results.push({ channel: "topic", ok: true, messageId: res.MessageId });
+        const subArn = sub.SubscriptionArn;
+        // If already confirmed, ensure the filter policy is up-to-date.
+        if (subArn && subArn !== "pending confirmation") {
+          try {
+            await sns.send(
+              new SetSubscriptionAttributesCommand({
+                SubscriptionArn: subArn,
+                AttributeName: "FilterPolicy",
+                AttributeValue: JSON.stringify({ reporterEmail: [reporterEmail] }),
+              }),
+            );
+          } catch {
+            // non-fatal
+          }
+          results.push({ channel: "subscribe", ok: true, info: "confirmed" });
+        } else {
+          results.push({
+            channel: "subscribe",
+            ok: true,
+            info: "pending_confirmation_email_sent",
+          });
+        }
       } catch (err) {
         results.push({
-          channel: "topic",
+          channel: "subscribe",
           ok: false,
           error: err instanceof Error ? err.message : String(err),
         });
       }
+    }
+
+    // 2) Publish to the topic tagged with reporterEmail — filter policy on the
+    //    subscription ensures only that reporter's confirmed inbox receives it.
+    const subject = `CivicConnect: Complaint ${issue.ticket_id} status updated`;
+    const body = `Hello,\n\nYour complaint "${issue.title}" (${issue.ticket_id}) status has been updated to "${data.status}".\n\nTicket ID: ${issue.ticket_id}\n\n— CivicConnect`;
+
+    try {
+      const res = await sns.send(
+        new PublishCommand({
+          TopicArn: topicArn,
+          Subject: subject,
+          Message: body,
+          MessageAttributes: reporterEmail
+            ? {
+                reporterEmail: { DataType: "String", StringValue: reporterEmail },
+              }
+            : undefined,
+        }),
+      );
+      results.push({ channel: "topic", ok: true, messageId: res.MessageId });
+    } catch (err) {
+      results.push({
+        channel: "topic",
+        ok: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
 
     console.log("[SNS notify]", {
