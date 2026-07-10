@@ -14,16 +14,196 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          subject?: string
+        }
+        Relationships: []
+      }
+      issues: {
+        Row: {
+          attachments: Json
+          category: string
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          is_anonymous: boolean
+          location: string | null
+          priority: string
+          status: string
+          ticket_id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attachments?: Json
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          image_url?: string | null
+          is_anonymous?: boolean
+          location?: string | null
+          priority?: string
+          status?: string
+          ticket_id: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attachments?: Json
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          is_anonymous?: boolean
+          location?: string | null
+          priority?: string
+          status?: string
+          ticket_id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          mobile: string | null
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          mobile?: string | null
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          mobile?: string | null
+          name?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_category_counts: {
+        Args: never
+        Returns: {
+          name: string
+          value: number
+        }[]
+      }
+      get_issue_by_ticket: {
+        Args: { _ticket: string }
+        Returns: {
+          attachments: Json
+          category: string
+          created_at: string
+          description: string
+          image_url: string
+          location: string
+          priority: string
+          status: string
+          ticket_id: string
+          title: string
+          updated_at: string
+        }[]
+      }
+      get_issue_stats: { Args: never; Returns: Json }
+      get_monthly_trend: {
+        Args: never
+        Returns: {
+          month: string
+          reported: number
+          resolved: number
+        }[]
+      }
+      get_recent_resolved: {
+        Args: never
+        Returns: {
+          created_at: string
+          location: string
+          ticket_id: string
+          title: string
+          updated_at: string
+        }[]
+      }
+      get_resolution_trend: {
+        Args: never
+        Returns: {
+          days: number
+          month: string
+        }[]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +330,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
