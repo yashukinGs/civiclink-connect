@@ -100,6 +100,13 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
       }
     }
 
+    console.log("[SNS notify]", {
+      issueId: data.issueId,
+      ticketId: issue.ticket_id,
+      status: data.status,
+      phone: reporterPhone ? reporterPhone.slice(-4) : null,
+      results,
+    });
     return { results };
   });
 
