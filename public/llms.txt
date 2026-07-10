@@ -1,0 +1,14 @@
+# CivicConnect
+
+> A smart citizen issue reporting platform that empowers communities to report, track, and resolve civic issues with real-time updates, analytics, and transparency.
+
+## Pages
+
+- [Home](/): Landing page with platform overview, real-time civic issue statistics, and feature highlights.
+- [About](/about): Mission, vision, and how CivicConnect bridges the gap between citizens and local authorities.
+- [How It Works](/works): Step-by-step guide to reporting issues, tracking progress, and understanding the civic resolution workflow.
+- [Track Issue](/track): Check the status of a reported civic issue using its unique ticket ID.
+- [Contact](/contact): Reach out to the CivicConnect team for support, feedback, or partnerships.
+- [FAQ](/faq): Answers to common questions about reporting issues, privacy, and platform usage.
+- [Privacy Policy](/privacy): How user data, issue reports, and personal information are collected, used, and protected.
+- [Terms of Service](/terms): Rules, guidelines, and user responsibilities for using the CivicConnect platform.
