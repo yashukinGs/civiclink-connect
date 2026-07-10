@@ -116,32 +116,31 @@ function ReportIssue() {
     const list = Array.from(incoming);
     if (list.length === 0) return;
 
-    setFiles((prev) => {
-      const next = [...prev];
-      for (const file of list) {
-        if (next.length >= MAX_FILES) {
-          toast.error("Maximum 4 files are allowed.");
-          break;
-        }
-        const err = validateFile(file);
-        if (err) {
-          toast.error(err);
-          continue;
-        }
-        const item: SelectedFile = {
-          id: crypto.randomUUID(),
-          file,
-          previewUrl: isImageType(file.type) ? URL.createObjectURL(file) : null,
-          status: "pending",
-          progress: 0,
-          attachment: null,
-        };
-        next.push(item);
-        // kick off upload immediately
-        void uploadOne(item);
+    const accepted: SelectedFile[] = [];
+    for (const file of list) {
+      if (files.length + accepted.length >= MAX_FILES) {
+        toast.error("Maximum 4 files are allowed.");
+        break;
       }
-      return next;
-    });
+      const err = validateFile(file);
+      if (err) {
+        toast.error(err);
+        continue;
+      }
+      accepted.push({
+        id: crypto.randomUUID(),
+        file,
+        previewUrl: isImageType(file.type) ? URL.createObjectURL(file) : null,
+        status: "pending",
+        progress: 0,
+        attachment: null,
+      });
+    }
+
+    if (accepted.length > 0) {
+      setFiles((prev) => [...prev, ...accepted]);
+      accepted.forEach((item) => void uploadOne(item));
+    }
 
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
