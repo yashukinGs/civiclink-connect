@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { IssuePriority, IssueStatus } from "@/lib/demo-data";
+import { getS3UploadUrl, getS3DownloadUrl, deleteS3Object } from "@/lib/s3.functions";
 
 export const BUCKET = "issue-images";
 export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
