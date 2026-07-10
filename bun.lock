@@ -6,6 +6,7 @@
       "name": "tanstack_start_ts",
       "dependencies": {
         "@aws-sdk/client-s3": "^3.1081.0",
+        "@aws-sdk/client-sns": "^3.1080.0",
         "@aws-sdk/s3-request-presigner": "^3.1081.0",
         "@hookform/resolvers": "^5.2.2",
         "@radix-ui/react-accordion": "^1.2.12",
@@ -89,6 +90,8 @@
     "@aws-sdk/checksums": ["@aws-sdk/checksums@3.1000.16", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@aws-sdk/checksums/-/checksums-3.1000.16.tgz", { "dependencies": { "@aws-sdk/core": "^3.975.1", "@aws-sdk/types": "^3.974.0", "@smithy/core": "^3.29.2", "@smithy/types": "^4.16.0", "tslib": "^2.6.2" } }, "sha512-EKnvkXSmz3IpA99tCNuI+dLFXyZyClSm8zns9sB/elvkU+MTuomAs6toJMPMBf98/fICG/urXDkzGz0/c3yyAQ=="],
 
     "@aws-sdk/client-s3": ["@aws-sdk/client-s3@3.1081.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@aws-sdk/client-s3/-/client-s3-3.1081.0.tgz", { "dependencies": { "@aws-sdk/checksums": "^3.1000.14", "@aws-sdk/core": "^3.974.29", "@aws-sdk/credential-provider-node": "^3.972.64", "@aws-sdk/middleware-sdk-s3": "^3.972.60", "@aws-sdk/signature-v4-multi-region": "^3.996.38", "@aws-sdk/types": "^3.973.15", "@smithy/core": "^3.29.0", "@smithy/fetch-http-handler": "^5.6.2", "@smithy/node-http-handler": "^4.9.2", "@smithy/types": "^4.15.1", "tslib": "^2.6.2" } }, "sha512-mHAdLBibsbFwcW2YHrH5sIQlaXjB3zha7Nkooa2gqTlXxRpVJ+ba/v/mg19B6rJeZmOEteRHFz+INOlAbCbxJg=="],
+
+    "@aws-sdk/client-sns": ["@aws-sdk/client-sns@3.1080.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@aws-sdk/client-sns/-/client-sns-3.1080.0.tgz", { "dependencies": { "@aws-sdk/core": "^3.974.28", "@aws-sdk/credential-provider-node": "^3.972.63", "@aws-sdk/types": "^3.973.15", "@smithy/core": "^3.29.0", "@smithy/fetch-http-handler": "^5.6.2", "@smithy/node-http-handler": "^4.9.2", "@smithy/types": "^4.15.1", "tslib": "^2.6.2" } }, "sha512-AmVPt5EauROmrMJvhqnDPtvGqxdijTo7pKdu4JTH1wVCIwqG869GDihsInfi0CH8CxWYf2nYixxgdEFYWasZvA=="],
 
     "@aws-sdk/core": ["@aws-sdk/core@3.975.1", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@aws-sdk/core/-/core-3.975.1.tgz", { "dependencies": { "@aws-sdk/types": "^3.974.0", "@aws-sdk/xml-builder": "^3.972.34", "@aws/lambda-invoke-store": "^0.3.0", "@smithy/core": "^3.29.2", "@smithy/signature-v4": "^5.6.3", "@smithy/types": "^4.16.0", "bowser": "^2.11.0", "tslib": "^2.6.2" } }, "sha512-8qh/6EYb7hl/ZwVfQufhbMEZs1gQIc7GbdrIf4eprQJ7cv042+74nE6l3YDfyWNzb9iPXb8fRyYSHkNIk5eE6Q=="],
 
