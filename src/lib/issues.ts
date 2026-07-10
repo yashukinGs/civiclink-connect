@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { IssuePriority, IssueStatus } from "@/lib/demo-data";
-import { getS3UploadUrl, getS3DownloadUrl, deleteS3Object } from "@/lib/s3.functions";
+import { uploadS3File, getS3DownloadUrl, deleteS3Object } from "@/lib/s3.functions";
 
 export const BUCKET = "issue-images";
 export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -105,81 +105,40 @@ export function validateFile(file: File): string | null {
 // Backwards-compatible alias.
 export const validateImageFile = validateFile;
 
-// Upload one file to AWS S3 with progress; returns an Attachment where `path` is the S3 object key.
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("Could not read the selected file."));
+    reader.readAsDataURL(file);
+  });
+}
+
+// Upload one file to AWS S3 through the backend; returns an Attachment where `path` is the S3 object key.
 export async function uploadIssueFile(
   file: File,
   onProgress?: (percent: number) => void,
 ): Promise<Attachment> {
-  const { uploadUrl, key } = await getS3UploadUrl({
-    data: { fileName: file.name, contentType: file.type || "application/octet-stream" },
-  });
-
   console.info("[S3 upload] starting", {
-    key,
     fileName: file.name,
     size: file.size,
     type: file.type,
   });
 
-  await new Promise<void>((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("PUT", uploadUrl);
-    if (file.type) xhr.setRequestHeader("Content-Type", file.type);
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable && onProgress) {
-        onProgress(Math.round((e.loaded / e.total) * 100));
-      }
-    };
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        console.info("[S3 upload] success", { key, status: xhr.status });
-        onProgress?.(100);
-        resolve();
-      } else {
-        // Parse AWS XML error body (<Code>, <Message>, <RequestId>) if present.
-        const body = xhr.responseText || "";
-        const pick = (tag: string) =>
-          new RegExp(`<${tag}>([^<]+)</${tag}>`, "i").exec(body)?.[1];
-        const awsCode = pick("Code");
-        const awsMessage = pick("Message");
-        const requestId = pick("RequestId");
-        console.error("[S3 upload] failed", {
-          key,
-          status: xhr.status,
-          statusText: xhr.statusText,
-          awsCode,
-          awsMessage,
-          requestId,
-          rawBody: body.slice(0, 800),
-        });
-        reject(
-          new Error(
-            `S3 upload failed [${xhr.status}${xhr.statusText ? " " + xhr.statusText : ""}]` +
-              (awsCode ? ` — ${awsCode}` : "") +
-              (awsMessage ? `: ${awsMessage}` : "") +
-              (requestId ? ` (RequestId ${requestId})` : ""),
-          ),
-        );
-      }
-    };
-    xhr.onerror = () => {
-      console.error("[S3 upload] network error / CORS blocked", {
-        key,
-        status: xhr.status,
-        statusText: xhr.statusText,
-      });
-      reject(
-        new Error(
-          "S3 upload network error. This usually means the bucket CORS is not configured to allow PUT from this origin, or the presigned URL was rejected before a response body was returned.",
-        ),
-      );
-    };
-    xhr.ontimeout = () => {
-      console.error("[S3 upload] timeout", { key });
-      reject(new Error("S3 upload timed out."));
-    };
-    xhr.send(file);
+  onProgress?.(5);
+  const base64Data = await readFileAsDataUrl(file);
+  onProgress?.(35);
+
+  const { key } = await uploadS3File({
+    data: {
+      fileName: file.name,
+      contentType: file.type || "application/octet-stream",
+      base64Data,
+    },
   });
+
+  console.info("[S3 upload] success", { key });
+  onProgress?.(100);
 
   return { path: key, name: file.name, type: file.type };
 }

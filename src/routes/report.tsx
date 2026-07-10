@@ -48,6 +48,7 @@ type FileStatus = "pending" | "uploading" | "done" | "error";
 
 interface SelectedFile {
   id: string;
+  fileKey: string;
   file: File;
   previewUrl: string | null; // for images
   status: FileStatus;
@@ -70,6 +71,8 @@ function ReportIssue() {
   const [dragActive, setDragActive] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectedFileKeysRef = useRef(new Set<string>());
+  const uploadingFileIdsRef = useRef(new Set<string>());
 
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
@@ -94,15 +97,24 @@ function ReportIssue() {
   };
 
   const uploadOne = async (item: SelectedFile) => {
+    if (uploadingFileIdsRef.current.has(item.id)) return;
+    uploadingFileIdsRef.current.add(item.id);
     updateFile(item.id, { status: "uploading", progress: 0 });
     try {
       const attachment = await uploadIssueFile(item.file, (p) =>
         updateFile(item.id, { progress: p }),
       );
       updateFile(item.id, { status: "done", progress: 100, attachment });
-    } catch {
+    } catch (err) {
       updateFile(item.id, { status: "error" });
-      toast.error(`Could not upload "${item.file.name}". You can retry.`);
+      console.error("Issue attachment upload failed:", err);
+      toast.error(
+        err instanceof Error
+          ? `Could not upload "${item.file.name}": ${err.message}`
+          : `Could not upload "${item.file.name}". You can retry.`,
+      );
+    } finally {
+      uploadingFileIdsRef.current.delete(item.id);
     }
   };
 
@@ -111,32 +123,35 @@ function ReportIssue() {
     const list = Array.from(incoming);
     if (list.length === 0) return;
 
-    setFiles((prev) => {
-      const next = [...prev];
-      for (const file of list) {
-        if (next.length >= MAX_FILES) {
-          toast.error("Maximum 4 files are allowed.");
-          break;
-        }
-        const err = validateFile(file);
-        if (err) {
-          toast.error(err);
-          continue;
-        }
-        const item: SelectedFile = {
-          id: crypto.randomUUID(),
-          file,
-          previewUrl: isImageType(file.type) ? URL.createObjectURL(file) : null,
-          status: "pending",
-          progress: 0,
-          attachment: null,
-        };
-        next.push(item);
-        // kick off upload immediately
-        void uploadOne(item);
+    const accepted: SelectedFile[] = [];
+    for (const file of list) {
+      if (files.length + accepted.length >= MAX_FILES) {
+        toast.error("Maximum 4 files are allowed.");
+        break;
       }
-      return next;
-    });
+      const err = validateFile(file);
+      if (err) {
+        toast.error(err);
+        continue;
+      }
+      const fileKey = `${file.name}:${file.size}:${file.lastModified}:${file.type}`;
+      if (selectedFileKeysRef.current.has(fileKey)) continue;
+      selectedFileKeysRef.current.add(fileKey);
+      accepted.push({
+        id: crypto.randomUUID(),
+        fileKey,
+        file,
+        previewUrl: isImageType(file.type) ? URL.createObjectURL(file) : null,
+        status: "pending",
+        progress: 0,
+        attachment: null,
+      });
+    }
+
+    if (accepted.length > 0) {
+      setFiles((prev) => [...prev, ...accepted]);
+      accepted.forEach((item) => void uploadOne(item));
+    }
 
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -146,6 +161,7 @@ function ReportIssue() {
       const target = prev.find((f) => f.id === id);
       if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
       if (target?.attachment) void removeIssueFile(target.attachment.path).catch(() => {});
+      if (target) selectedFileKeysRef.current.delete(target.fileKey);
       return prev.filter((f) => f.id !== id);
     });
   };
@@ -175,6 +191,8 @@ function ReportIssue() {
     setDescription("");
     setLocation("");
     setIsAnonymous(false);
+    selectedFileKeysRef.current.clear();
+    uploadingFileIdsRef.current.clear();
     setFiles([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
