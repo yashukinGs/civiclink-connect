@@ -48,6 +48,7 @@ type FileStatus = "pending" | "uploading" | "done" | "error";
 
 interface SelectedFile {
   id: string;
+  fileKey: string;
   file: File;
   previewUrl: string | null; // for images
   status: FileStatus;
@@ -70,6 +71,7 @@ function ReportIssue() {
   const [dragActive, setDragActive] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectedFileKeysRef = useRef(new Set<string>());
 
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
@@ -127,8 +129,12 @@ function ReportIssue() {
         toast.error(err);
         continue;
       }
+      const fileKey = `${file.name}:${file.size}:${file.lastModified}:${file.type}`;
+      if (selectedFileKeysRef.current.has(fileKey)) continue;
+      selectedFileKeysRef.current.add(fileKey);
       accepted.push({
         id: crypto.randomUUID(),
+        fileKey,
         file,
         previewUrl: isImageType(file.type) ? URL.createObjectURL(file) : null,
         status: "pending",
@@ -150,6 +156,7 @@ function ReportIssue() {
       const target = prev.find((f) => f.id === id);
       if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
       if (target?.attachment) void removeIssueFile(target.attachment.path).catch(() => {});
+      if (target) selectedFileKeysRef.current.delete(target.fileKey);
       return prev.filter((f) => f.id !== id);
     });
   };
@@ -179,6 +186,7 @@ function ReportIssue() {
     setDescription("");
     setLocation("");
     setIsAnonymous(false);
+    selectedFileKeysRef.current.clear();
     setFiles([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
