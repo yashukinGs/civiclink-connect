@@ -109,6 +109,18 @@ function Login() {
             </Button>
           </form>
 
+          <div className="mt-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">OR</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <Link to="/cognito-auth" className="mt-4 block">
+            <Button type="button" variant="outline" size="lg" className="w-full">
+              Login with AWS Cognito
+            </Button>
+          </Link>
+
           <p className="mt-6 text-center text-sm text-muted-foreground">
             New here?{" "}
             <Link to="/register" className="font-semibold text-primary hover:underline">
