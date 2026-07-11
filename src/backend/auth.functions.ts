@@ -20,6 +20,7 @@ function getAdminSecrets() {
 // Idempotent: if the account already exists its password is left untouched.
 export const ensureAdminAccount = createServerFn({ method: "POST" }).handler(
   async (): Promise<{ ready: boolean }> => {
+    const { email: ADMIN_EMAIL, password: ADMIN_PASSWORD } = getAdminSecrets();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // Resolve the admin auth user (create if missing).
