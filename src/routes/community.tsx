@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Trophy, Medal, Award, Star, CheckCircle2 } from "lucide-react";
+import { Trophy, Medal, Award, Star, CheckCircle2, MapPin } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { STATUS_STYLES, PRIORITY_STYLES, type IssueStatus, type IssuePriority } from "@/lib/demo-data";
 import { SiteLayout, PageHeader } from "@/components/site/SiteLayout";
 import { supabase } from "@/integrations/supabase/client";
 
