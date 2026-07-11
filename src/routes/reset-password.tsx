@@ -191,6 +191,7 @@ function ResetPassword() {
               {busy ? "Updating…" : "Update password"} <ArrowRight className="h-4 w-4" />
             </Button>
           </form>
+          )}
         </motion.div>
       </div>
     </div>
