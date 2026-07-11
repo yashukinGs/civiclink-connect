@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
+  cognitoConfirmForgotPassword,
   cognitoConfirmSignUp,
+  cognitoForgotPassword,
   cognitoSignIn,
   cognitoSignUp,
   getCognitoConfig,
@@ -82,6 +84,26 @@ export const cognitoConfirmRegisterBridgeFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const config = getCognitoConfig();
     await cognitoConfirmSignUp(config, data);
+    return { ok: true };
+  });
+
+export const cognitoForgotPasswordFn = createServerFn({ method: "POST" })
+  .inputValidator((input: { email: string }) => input)
+  .handler(async ({ data }) => {
+    const config = getCognitoConfig();
+    const res = await cognitoForgotPassword(config, data);
+    const delivery = (res as { CodeDeliveryDetails?: { Destination?: string } })
+      .CodeDeliveryDetails;
+    return { ok: true, destination: delivery?.Destination };
+  });
+
+export const cognitoConfirmForgotPasswordFn = createServerFn({ method: "POST" })
+  .inputValidator(
+    (input: { email: string; code: string; newPassword: string }) => input,
+  )
+  .handler(async ({ data }) => {
+    const config = getCognitoConfig();
+    await cognitoConfirmForgotPassword(config, data);
     return { ok: true };
   });
 
