@@ -16,7 +16,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { STATUS_STYLES, PRIORITY_STYLES, type IssueStatus, type IssuePriority } from "@/lib/demo-data";
 import { useAuth } from "@/lib/auth";
-import { useAllIssues } from "@/lib/issues";
+import { useAllIssues, useMyIssues } from "@/lib/issues";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dashboard")({
@@ -38,6 +38,7 @@ function Dashboard() {
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
   const { issues, loading: issuesLoading } = useAllIssues(!loading && isLoggedIn);
+  const { issues: myIssues } = useMyIssues();
   const [name, setName] = useState<string>("");
 
   useEffect(() => {
@@ -68,8 +69,9 @@ function Dashboard() {
     ];
   }, [issues]);
 
-  const points = issues.length * 50 + issues.filter((i) => ["Resolved", "Closed"].includes(i.status)).length * 100;
+  const points = myIssues.length * 50 + myIssues.filter((i) => ["Resolved", "Closed"].includes(i.status)).length * 100;
   const badge = points >= 1000 ? "City Hero" : points >= 400 ? "Gold Reporter" : points > 0 ? "Active Citizen" : "New Reporter";
+
 
   if (loading || !isLoggedIn) return null;
 
