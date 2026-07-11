@@ -152,6 +152,83 @@ function Community() {
         </div>
 
         {/* Resolved feed */}
+        {/* All complaints feed - public */}
+        <div className="mx-auto mt-12 max-w-6xl px-4">
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <div>
+              <h3 className="text-xl font-bold">All Complaints</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Every complaint reported by the community. Find yours and track its progress.
+              </p>
+            </div>
+            {!loading && (
+              <span className="text-xs text-muted-foreground">{allIssues.length} total</span>
+            )}
+          </div>
+          {loading ? (
+            <p className="mt-6 text-sm text-muted-foreground">Loading complaints…</p>
+          ) : allIssues.length === 0 ? (
+            <div className="mt-6 glass-card rounded-2xl p-8 text-center text-sm text-muted-foreground">
+              No complaints reported yet. Be the first!
+            </div>
+          ) : (
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {allIssues.map((r, i) => (
+                <motion.div
+                  key={r.ticket_id}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: Math.min(i * 0.03, 0.4) }}
+                  className="glass-card rounded-2xl p-5 flex flex-col"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <Link
+                      to="/track"
+                      search={{ id: r.ticket_id }}
+                      className="text-xs font-semibold text-primary hover:underline"
+                    >
+                      {r.ticket_id}
+                    </Link>
+                    <span
+                      className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                        STATUS_STYLES[r.status as IssueStatus] ?? ""
+                      }`}
+                    >
+                      {r.status}
+                    </span>
+                  </div>
+                  <h4 className="mt-3 text-sm font-semibold break-words">{r.title}</h4>
+                  <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground break-words">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    {r.location || "Location not provided"}
+                  </p>
+                  <div className="mt-3 flex items-center gap-2 flex-wrap">
+                    <span className="rounded-full border border-border/60 bg-secondary/40 px-2 py-0.5 text-[10px] font-medium">
+                      {r.category}
+                    </span>
+                    <span
+                      className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                        PRIORITY_STYLES[r.priority as IssuePriority] ?? ""
+                      }`}
+                    >
+                      {r.priority}
+                    </span>
+                  </div>
+                  <Link
+                    to="/track"
+                    search={{ id: r.ticket_id }}
+                    className="mt-4 text-xs font-medium text-primary hover:underline"
+                  >
+                    Track this complaint →
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Resolved feed */}
         <div className="mx-auto mt-12 max-w-6xl px-4">
           <h3 className="text-xl font-bold">Recently Resolved</h3>
           {loading ? (
