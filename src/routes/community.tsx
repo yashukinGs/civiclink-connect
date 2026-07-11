@@ -166,9 +166,10 @@ function Community() {
                   className="glass-card rounded-2xl p-5"
                 >
                   <CheckCircle2 className="h-5 w-5 text-success" />
-                  <h4 className="mt-3 text-sm font-semibold">{r.title}</h4>
-                  <p className="mt-1 text-xs text-muted-foreground">{r.location || "Location not provided"}</p>
+                  <h4 className="mt-3 text-sm font-semibold break-words">{r.title}</h4>
+                  <p className="mt-1 text-xs text-muted-foreground break-words">{r.location || "Location not provided"}</p>
                   <span className="mt-3 inline-block rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success">
+
                     Resolved in {resolvedInDays(r.created_at, r.updated_at)}
                   </span>
                 </motion.div>
