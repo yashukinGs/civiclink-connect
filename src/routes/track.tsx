@@ -123,6 +123,21 @@ function TrackIssue() {
             animate={{ opacity: 1, y: 0 }}
             className="mx-auto mt-10 grid max-w-5xl gap-6 px-4 lg:grid-cols-5"
           >
+            <div className="lg:col-span-5">
+              <div className="flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                <Mail className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                <div className="text-sm">
+                  <p className="font-medium">Get email updates on this complaint</p>
+                  <p className="mt-0.5 text-muted-foreground">
+                    Check your inbox for a one-time <span className="font-medium">"Confirm subscription"</span> email
+                    from AWS Notifications. Click the confirmation link once — after that, every
+                    status change on your complaints will be emailed to you automatically. If you
+                    don't see it, check your spam folder.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Details */}
             <div className="glass-card rounded-2xl p-6 lg:col-span-2">
               <div className="flex items-center justify-between">
