@@ -62,6 +62,7 @@ function ReportIssue() {
   const [priority, setPriority] = useState<IssuePriority>("Medium");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -171,6 +172,7 @@ function ReportIssue() {
     files.forEach((f) => f.previewUrl && URL.revokeObjectURL(f.previewUrl));
     setTitle("");
     setCategory("");
+    setCustomCategory("");
     setPriority("Medium");
     setDescription("");
     setLocation("");
@@ -185,7 +187,12 @@ function ReportIssue() {
     e.preventDefault();
     if (!title.trim()) return toast.error("Please enter an issue title.");
     if (!category) return toast.error("Please select a category.");
+    if (category === "Other" && !customCategory.trim())
+      return toast.error("Please specify the category.");
     if (!description.trim()) return toast.error("Please add a description.");
+
+    const finalCategory =
+      category === "Other" ? `Other: ${customCategory.trim()}` : category;
 
     if (files.some((f) => f.status === "uploading")) {
       return toast.error("Please wait for files to finish uploading.");
@@ -201,7 +208,7 @@ function ReportIssue() {
     setSubmitting(true);
     try {
       const issue = await createIssue(
-        { title, category, priority, description, location, isAnonymous },
+        { title, category: finalCategory, priority, description, location, isAnonymous },
         attachments,
       );
 
@@ -256,7 +263,14 @@ function ReportIssue() {
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Category</Label>
-              <Select value={category} onValueChange={setCategory} required>
+              <Select
+                value={category}
+                onValueChange={(v) => {
+                  setCategory(v);
+                  if (v !== "Other") setCustomCategory("");
+                }}
+                required
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
@@ -290,6 +304,25 @@ function ReportIssue() {
               </div>
             </div>
           </div>
+
+          {category === "Other" && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-1.5"
+            >
+              <Label htmlFor="custom-category">Specify Category</Label>
+              <Textarea
+                id="custom-category"
+                rows={2}
+                value={customCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+                placeholder="Please describe the type of issue (e.g. Stray animals, Illegal parking, Noise pollution...)"
+                required
+              />
+            </motion.div>
+          )}
+
 
           <div className="space-y-1.5">
             <Label htmlFor="desc">Description</Label>
