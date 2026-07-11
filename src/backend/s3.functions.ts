@@ -7,7 +7,7 @@ import {
   deleteS3ObjectKey,
   uploadS3Object,
   type S3RuntimeConfig,
-} from "@/lib/s3.server";
+} from "@/backend/s3.server";
 
 export const getS3UploadUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

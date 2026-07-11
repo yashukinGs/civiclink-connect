@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { PasswordStrength } from "@/components/PasswordStrength";
-import { registerAdmin } from "@/lib/auth.functions";
+import { registerAdmin } from "@/backend/auth.functions";
 import { validateEmail, validatePassword } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin-register")({

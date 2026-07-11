@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { IssuePriority, IssueStatus } from "@/lib/demo-data";
-import { uploadS3File, getS3DownloadUrl, deleteS3Object } from "@/lib/s3.functions";
-import { mirrorIssueToDynamo } from "@/lib/dynamodb.functions";
+import { uploadS3File, getS3DownloadUrl, deleteS3Object } from "@/backend/s3.functions";
+import { mirrorIssueToDynamo } from "@/backend/dynamodb.functions";
 
 export const BUCKET = "issue-images";
 export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];

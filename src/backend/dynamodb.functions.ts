@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { getDynamoConfig, putIssueItem } from "@/lib/dynamodb.server";
+import { getDynamoConfig, putIssueItem } from "@/backend/dynamodb.server";
 
 const mirrorInput = z.object({
   ticket_id: z.string().min(1),
