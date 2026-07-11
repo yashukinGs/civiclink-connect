@@ -73,7 +73,42 @@ export const uploadS3File = createServerFn({ method: "POST" })
 export const getS3DownloadUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { key: string }) => input)
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    // Authorize: caller must own the key prefix, OR the key must be
+    // referenced by an issue they own / are assigned to / can admin.
+    const ownsPrefix = data.key.startsWith(`${context.userId}/`);
+    if (!ownsPrefix) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const publicUrlFragment = data.key;
+      const { data: issue } = await supabaseAdmin
+        .from("issues")
+        .select("user_id, assigned_officer_id, image_url, attachments")
+        .or(`image_url.ilike.%${publicUrlFragment}%,attachments::text.ilike.%${publicUrlFragment}%`)
+        .maybeSingle();
+
+      let allowed = false;
+      if (issue) {
+        if (issue.user_id === context.userId) allowed = true;
+        if (!allowed && issue.assigned_officer_id) {
+          const { data: staff } = await supabaseAdmin
+            .from("staff")
+            .select("id")
+            .eq("id", issue.assigned_officer_id)
+            .eq("user_id", context.userId)
+            .maybeSingle();
+          if (staff) allowed = true;
+        }
+      }
+      if (!allowed) {
+        const { data: isAdmin } = await supabaseAdmin.rpc("has_role", {
+          _user_id: context.userId,
+          _role: "admin",
+        });
+        if (isAdmin) allowed = true;
+      }
+      if (!allowed) throw new Error("Forbidden");
+    }
+
     const region = process.env.AWS_REGION;
     const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
     const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;

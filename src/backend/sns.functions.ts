@@ -16,7 +16,7 @@ const inputSchema = z.object({
 export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => inputSchema.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const region = process.env.AWS_SNS_REGION || process.env.AWS_REGION;
     const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
     const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
@@ -33,11 +33,32 @@ export const notifyIssueStatusChanged = createServerFn({ method: "POST" })
 
     const { data: issue, error: issueErr } = await supabaseAdmin
       .from("issues")
-      .select("id, ticket_id, title, status, user_id")
+      .select("id, ticket_id, title, status, user_id, assigned_officer_id")
       .eq("id", data.issueId)
       .maybeSingle();
     if (issueErr) throw new Error(issueErr.message);
     if (!issue) throw new Error("Issue not found");
+
+    // Authorize: only the issue owner, the assigned officer, or an admin
+    // may trigger a status-change notification for this complaint.
+    let authorized = issue.user_id === context.userId;
+    if (!authorized && issue.assigned_officer_id) {
+      const { data: staff } = await supabaseAdmin
+        .from("staff")
+        .select("id")
+        .eq("id", issue.assigned_officer_id)
+        .eq("user_id", context.userId)
+        .maybeSingle();
+      if (staff) authorized = true;
+    }
+    if (!authorized) {
+      const { data: isAdmin } = await supabaseAdmin.rpc("has_role", {
+        _user_id: context.userId,
+        _role: "admin",
+      });
+      if (isAdmin) authorized = true;
+    }
+    if (!authorized) throw new Error("Forbidden");
 
     let reporterEmail: string | null = null;
     if (issue.user_id) {
