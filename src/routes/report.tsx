@@ -62,6 +62,7 @@ function ReportIssue() {
   const [priority, setPriority] = useState<IssuePriority>("Medium");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
