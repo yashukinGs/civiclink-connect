@@ -321,20 +321,7 @@ function ReportIssue() {
 
           <div className="space-y-1.5">
             <Label>Location</Label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Enter address or use GPS"
-                  className="pl-9"
-                />
-              </div>
-              <Button type="button" variant="glass" onClick={detectLocation}>
-                <Crosshair className="h-4 w-4" /> Detect
-              </Button>
-            </div>
+            <LocationPicker value={location} onChange={(addr) => setLocation(addr)} />
           </div>
 
           <div className="space-y-1.5">
