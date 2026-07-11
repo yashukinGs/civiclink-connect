@@ -305,6 +305,25 @@ function ReportIssue() {
             </div>
           </div>
 
+          {category === "Other" && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-1.5"
+            >
+              <Label htmlFor="custom-category">Specify Category</Label>
+              <Textarea
+                id="custom-category"
+                rows={2}
+                value={customCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+                placeholder="Please describe the type of issue (e.g. Stray animals, Illegal parking, Noise pollution...)"
+                required
+              />
+            </motion.div>
+          )}
+
+
           <div className="space-y-1.5">
             <Label htmlFor="desc">Description</Label>
             <Textarea
