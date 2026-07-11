@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
+  cognitoConfirmForgotPassword,
   cognitoConfirmSignUp,
+  cognitoForgotPassword,
   cognitoSignIn,
   cognitoSignUp,
   getCognitoConfig,
