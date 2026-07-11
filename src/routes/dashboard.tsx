@@ -69,8 +69,9 @@ function Dashboard() {
     ];
   }, [issues]);
 
-  const points = issues.length * 50 + issues.filter((i) => ["Resolved", "Closed"].includes(i.status)).length * 100;
+  const points = myIssues.length * 50 + myIssues.filter((i) => ["Resolved", "Closed"].includes(i.status)).length * 100;
   const badge = points >= 1000 ? "City Hero" : points >= 400 ? "Gold Reporter" : points > 0 ? "Active Citizen" : "New Reporter";
+
 
   if (loading || !isLoggedIn) return null;
 
