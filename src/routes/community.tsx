@@ -32,6 +32,7 @@ const BADGES = [
 
 type LeaderRow = { name: string; reports: number; resolved: number; points: number };
 type ResolvedRow = { ticket_id: string; title: string; location: string | null; created_at: string; updated_at: string };
+type AllIssueRow = { ticket_id: string; title: string; category: string; priority: string; location: string | null; status: string; created_at: string; updated_at: string };
 
 function badgeFor(points: number) {
   if (points >= 1000) return "City Hero";
