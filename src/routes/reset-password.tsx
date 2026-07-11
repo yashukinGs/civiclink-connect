@@ -20,19 +20,60 @@ function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
 
-  // A recovery link establishes a temporary session via the URL hash.
+  // A recovery link establishes a temporary session. Supabase may deliver it
+  // either as a hash (#access_token=...&type=recovery) or as a PKCE code
+  // (?code=...). Handle both explicitly so the form is always usable.
   useEffect(() => {
     let active = true;
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (active && data.session) setReady(true);
-    });
+    async function bootstrap() {
+      try {
+        const url = new URL(window.location.href);
+
+        // Error returned in the URL from Supabase (expired/invalid link)
+        const errorDesc =
+          url.searchParams.get("error_description") ||
+          new URLSearchParams(url.hash.replace(/^#/, "")).get("error_description");
+        if (errorDesc) {
+          if (active) setLinkError(decodeURIComponent(errorDesc));
+          return;
+        }
+
+        // PKCE flow: ?code=...
+        const code = url.searchParams.get("code");
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) {
+            if (active) setLinkError("This reset link is invalid or has expired. Please request a new one.");
+            return;
+          }
+          // Clean the code out of the URL
+          window.history.replaceState({}, "", url.pathname);
+        }
+
+        // Implicit flow tokens land in the hash and are parsed by supabase-js
+        // automatically when detectSessionInUrl is on. Give it a tick, then check.
+        const { data } = await supabase.auth.getSession();
+        if (active && data.session) {
+          setReady(true);
+          return;
+        }
+      } catch {
+        if (active) setLinkError("Could not verify this reset link. Please request a new one.");
+      }
+    }
+
+    bootstrap();
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (!active) return;
-      if (event === "PASSWORD_RECOVERY" || session) setReady(true);
+      if (event === "PASSWORD_RECOVERY" || session) {
+        setReady(true);
+        setLinkError(null);
+      }
     });
 
     return () => {
@@ -55,11 +96,25 @@ function ResetPassword() {
           </div>
           <h1 className="mt-5 text-center text-2xl font-bold">Set a new password</h1>
           <p className="mt-1 text-center text-sm text-muted-foreground">
-            {ready
-              ? "Choose a strong password for your account."
-              : "Open this page from the reset link in your email."}
+            {linkError
+              ? linkError
+              : ready
+                ? "Choose a strong password for your account."
+                : "Verifying your reset link…"}
           </p>
 
+          {linkError && (
+            <Button
+              variant="hero"
+              size="lg"
+              className="mt-6 w-full"
+              onClick={() => navigate({ to: "/forgot-password" })}
+            >
+              Request a new reset link <ArrowRight className="h-4 w-4" />
+            </Button>
+          )}
+
+          {!linkError && (
           <form
             className="mt-7 space-y-4"
             onSubmit={async (e) => {
@@ -136,6 +191,7 @@ function ResetPassword() {
               {busy ? "Updating…" : "Update password"} <ArrowRight className="h-4 w-4" />
             </Button>
           </form>
+          )}
         </motion.div>
       </div>
     </div>
