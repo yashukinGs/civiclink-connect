@@ -12,6 +12,9 @@ import { createServerFn } from "@tanstack/react-start";
 const ADMIN_EMAIL = "admin@civicconnect.app";
 const ADMIN_CODE = "CIVIC-ADMIN-2026";
 const ADMIN_PASSWORD = "CivicConnect@2026";
+// Secret code required to register a NEW admin account. Share only with
+// trusted authority personnel. Rotate by changing this constant.
+const ADMIN_REGISTRATION_CODE = "CIVIC-REGISTER-2026";
 
 // Make sure the single administrator account exists and holds the admin role.
 // Idempotent: if the account already exists its password is left untouched.
