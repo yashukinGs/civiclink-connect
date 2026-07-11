@@ -39,6 +39,7 @@ import {
   MAX_FILES,
   type Attachment,
 } from "@/lib/issues";
+import { LocationPicker } from "@/components/LocationPicker";
 
 export const Route = createFileRoute("/report")({
   component: ReportIssue,
