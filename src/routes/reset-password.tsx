@@ -96,10 +96,23 @@ function ResetPassword() {
           </div>
           <h1 className="mt-5 text-center text-2xl font-bold">Set a new password</h1>
           <p className="mt-1 text-center text-sm text-muted-foreground">
-            {ready
-              ? "Choose a strong password for your account."
-              : "Open this page from the reset link in your email."}
+            {linkError
+              ? linkError
+              : ready
+                ? "Choose a strong password for your account."
+                : "Verifying your reset link…"}
           </p>
+
+          {linkError && (
+            <Button
+              variant="hero"
+              size="lg"
+              className="mt-6 w-full"
+              onClick={() => navigate({ to: "/forgot-password" })}
+            >
+              Request a new reset link <ArrowRight className="h-4 w-4" />
+            </Button>
+          )}
 
           <form
             className="mt-7 space-y-4"
