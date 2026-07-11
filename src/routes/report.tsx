@@ -165,22 +165,7 @@ function ReportIssue() {
     });
   };
 
-  const detectLocation = () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported on this device.");
-      return;
-    }
-    toast.loading("Detecting your location…", { id: "geo" });
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setLocation(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
-        toast.success("Location detected.", { id: "geo" });
-      },
-      () => toast.error("Could not detect location. Please enter it manually.", { id: "geo" }),
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
-  };
+
 
   const resetForm = () => {
     files.forEach((f) => f.previewUrl && URL.revokeObjectURL(f.previewUrl));
