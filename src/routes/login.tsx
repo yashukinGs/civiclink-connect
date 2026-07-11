@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
@@ -9,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { validateEmail } from "@/lib/auth";
+import { cognitoLoginBridgeFn } from "@/backend/cognito-bridge.functions";
+
 
 
 export const Route = createFileRoute("/login")({
@@ -23,6 +26,9 @@ function Login() {
   const { redirect } = Route.useSearch();
   const destination = redirect === "/report" ? "/report" : "/";
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const cognitoLogin = useServerFn(cognitoLoginBridgeFn);
+
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
@@ -57,19 +63,34 @@ function Login() {
                 toast.error("Password is required.");
                 return;
               }
+              setLoading(true);
               try {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                const { tokenHash } = await cognitoLogin({ data: { email, password } });
+                const { error } = await supabase.auth.verifyOtp({
+                  token_hash: tokenHash,
+                  type: "magiclink",
+                });
                 if (error) {
-                  toast.error("Invalid email or password.");
+                  toast.error("Signed in with Cognito, but session bridge failed.");
                   return;
                 }
                 toast.success("Logged in! Redirecting…");
-                setTimeout(() => navigate({ to: destination }), 600);
-              } catch {
-                toast.error("Something went wrong. Please try again.");
+                setTimeout(() => navigate({ to: destination }), 500);
+              } catch (err) {
+                const msg = err instanceof Error ? err.message : "Login failed";
+                toast.error(
+                  /NotAuthorized|Incorrect|password/i.test(msg)
+                    ? "Invalid email or password."
+                    : /UserNotConfirmed/i.test(msg)
+                      ? "Please verify your email first (check your inbox for the code)."
+                      : msg,
+                );
+              } finally {
+                setLoading(false);
               }
             }}
           >
+
             <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -104,22 +125,15 @@ function Login() {
                 Forgot password?
               </Link>
             </div>
-            <Button type="submit" variant="hero" size="lg" className="w-full">
-              Login <ArrowRight className="h-4 w-4" />
+            <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
+              {loading ? "Signing in…" : "Login"} <ArrowRight className="h-4 w-4" />
             </Button>
           </form>
 
-          <div className="mt-5 flex items-center gap-3">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted-foreground">OR</span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            Secured by AWS Cognito
+          </p>
 
-          <Link to="/cognito-auth" className="mt-4 block">
-            <Button type="button" variant="outline" size="lg" className="w-full">
-              Login with AWS Cognito
-            </Button>
-          </Link>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             New here?{" "}
