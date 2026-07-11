@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Search, MapPin, CheckCircle2, Circle, Clock, Loader2 } from "lucide-react";
+import { Search, MapPin, CheckCircle2, Circle, Clock, Loader2, Mail } from "lucide-react";
 import { SiteLayout, PageHeader } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
