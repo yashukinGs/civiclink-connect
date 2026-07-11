@@ -66,7 +66,8 @@ export const ensureAdminAccount = createServerFn({ method: "POST" }).handler(
 export const verifyAdminCode = createServerFn({ method: "POST" })
   .inputValidator((data: { code: string }) => data)
   .handler(async ({ data }): Promise<{ email: string }> => {
-    if ((data.code ?? "").trim().toUpperCase() !== ADMIN_CODE) {
+    const { email: ADMIN_EMAIL, code: ADMIN_CODE } = getAdminSecrets();
+    if ((data.code ?? "").trim().toUpperCase() !== ADMIN_CODE.toUpperCase()) {
       throw new Error("Invalid admin access code.");
     }
     return { email: ADMIN_EMAIL };
