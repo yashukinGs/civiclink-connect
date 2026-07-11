@@ -114,6 +114,7 @@ function ResetPassword() {
             </Button>
           )}
 
+          {!linkError && (
           <form
             className="mt-7 space-y-4"
             onSubmit={async (e) => {
