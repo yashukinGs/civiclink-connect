@@ -263,7 +263,14 @@ function ReportIssue() {
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Category</Label>
-              <Select value={category} onValueChange={setCategory} required>
+              <Select
+                value={category}
+                onValueChange={(v) => {
+                  setCategory(v);
+                  if (v !== "Other") setCustomCategory("");
+                }}
+                required
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
