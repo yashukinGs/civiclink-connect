@@ -38,6 +38,7 @@ function Dashboard() {
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
   const { issues, loading: issuesLoading } = useAllIssues(!loading && isLoggedIn);
+  const { issues: myIssues } = useMyIssues();
   const [name, setName] = useState<string>("");
 
   useEffect(() => {
