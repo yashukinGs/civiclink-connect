@@ -1,0 +1,1 @@
+CREATE POLICY "Authenticated users can view all issues" ON public.issues FOR SELECT TO authenticated USING (true);

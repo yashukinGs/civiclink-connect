@@ -16,7 +16,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { STATUS_STYLES, PRIORITY_STYLES, type IssueStatus, type IssuePriority } from "@/lib/demo-data";
 import { useAuth } from "@/lib/auth";
-import { useMyIssues } from "@/lib/issues";
+import { useAllIssues } from "@/lib/issues";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dashboard")({
@@ -37,7 +37,7 @@ function timeAgo(value: string) {
 function Dashboard() {
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
-  const { issues, loading: issuesLoading } = useMyIssues();
+  const { issues, loading: issuesLoading } = useAllIssues(!loading && isLoggedIn);
   const [name, setName] = useState<string>("");
 
   useEffect(() => {
@@ -78,7 +78,7 @@ function Dashboard() {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back{name ? `, ${name}` : ""} 👋</h1>
+            <h1 className="text-3xl font-bold">Welcome back, {name || "Citizen"} 👋</h1>
             <p className="mt-1 text-muted-foreground">Here's what's happening with your reports.</p>
           </div>
           <Button asChild variant="hero">
