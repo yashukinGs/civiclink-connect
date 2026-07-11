@@ -16,7 +16,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { STATUS_STYLES, PRIORITY_STYLES, type IssueStatus, type IssuePriority } from "@/lib/demo-data";
 import { useAuth } from "@/lib/auth";
-import { useMyIssues } from "@/lib/issues";
+import { useAllIssues } from "@/lib/issues";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dashboard")({
