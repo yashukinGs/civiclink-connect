@@ -26,6 +26,9 @@ function Login() {
   const { redirect } = Route.useSearch();
   const destination = redirect === "/report" ? "/report" : "/";
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const cognitoLogin = useServerFn(cognitoLoginBridgeFn);
+
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
