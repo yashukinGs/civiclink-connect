@@ -24,6 +24,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as AdminRegisterRouteImport } from './routes/admin-register'
 import { Route as AdminDashboardRouteImport } from './routes/admin-dashboard'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
@@ -109,6 +110,11 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRegisterRoute = AdminRegisterRouteImport.update({
+  id: '/admin-register',
+  path: '/admin-register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/admin-dashboard',
   path: '/admin-dashboard',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/admin-dashboard': typeof AdminDashboardRouteWithChildren
+  '/admin-register': typeof AdminRegisterRoute
   '/analytics': typeof AnalyticsRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/admin-register': typeof AdminRegisterRoute
   '/analytics': typeof AnalyticsRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/admin-dashboard': typeof AdminDashboardRouteWithChildren
+  '/admin-register': typeof AdminRegisterRoute
   '/analytics': typeof AnalyticsRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/admin-dashboard'
+    | '/admin-register'
     | '/analytics'
     | '/community'
     | '/contact'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/admin-register'
     | '/analytics'
     | '/community'
     | '/contact'
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/admin-dashboard'
+    | '/admin-register'
     | '/analytics'
     | '/community'
     | '/contact'
@@ -319,6 +331,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AdminDashboardRoute: typeof AdminDashboardRouteWithChildren
+  AdminRegisterRoute: typeof AdminRegisterRoute
   AnalyticsRoute: typeof AnalyticsRoute
   CommunityRoute: typeof CommunityRoute
   ContactRoute: typeof ContactRoute
@@ -443,6 +456,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-register': {
+      id: '/admin-register'
+      path: '/admin-register'
+      fullPath: '/admin-register'
+      preLoaderRoute: typeof AdminRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin-dashboard': {
       id: '/admin-dashboard'
       path: '/admin-dashboard'
@@ -534,6 +554,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AdminDashboardRoute: AdminDashboardRouteWithChildren,
+  AdminRegisterRoute: AdminRegisterRoute,
   AnalyticsRoute: AnalyticsRoute,
   CommunityRoute: CommunityRoute,
   ContactRoute: ContactRoute,

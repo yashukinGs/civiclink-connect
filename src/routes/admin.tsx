@@ -138,7 +138,10 @@ function AdminAuth() {
             password private — anyone with both can manage all reports.
           </div>
 
-          <div className="mt-4 text-center">
+          <div className="mt-4 flex flex-col items-center gap-1 text-center">
+            <Button asChild variant="link" size="sm">
+              <Link to="/admin-register">Register a new admin account</Link>
+            </Button>
             <Button asChild variant="ghost" size="sm">
               <Link to="/login">
                 <ArrowLeft className="h-4 w-4" /> Back to user login
