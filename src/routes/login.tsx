@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
@@ -9,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { validateEmail } from "@/lib/auth";
+import { cognitoLoginBridgeFn } from "@/backend/cognito-bridge.functions";
+
 
 
 export const Route = createFileRoute("/login")({
