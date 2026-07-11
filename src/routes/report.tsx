@@ -187,7 +187,12 @@ function ReportIssue() {
     e.preventDefault();
     if (!title.trim()) return toast.error("Please enter an issue title.");
     if (!category) return toast.error("Please select a category.");
+    if (category === "Other" && !customCategory.trim())
+      return toast.error("Please specify the category.");
     if (!description.trim()) return toast.error("Please add a description.");
+
+    const finalCategory =
+      category === "Other" ? `Other: ${customCategory.trim()}` : category;
 
     if (files.some((f) => f.status === "uploading")) {
       return toast.error("Please wait for files to finish uploading.");
