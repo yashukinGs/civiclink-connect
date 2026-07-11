@@ -275,6 +275,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_all_issues_public: {
+        Args: never
+        Returns: {
+          category: string
+          created_at: string
+          location: string
+          priority: string
+          status: string
+          ticket_id: string
+          title: string
+          updated_at: string
+        }[]
+      }
       get_category_counts: {
         Args: never
         Returns: {
