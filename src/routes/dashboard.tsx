@@ -78,7 +78,7 @@ function Dashboard() {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back{name ? `, ${name}` : ""} 👋</h1>
+            <h1 className="text-3xl font-bold">Welcome back, {name || "Citizen"} 👋</h1>
             <p className="mt-1 text-muted-foreground">Here's what's happening with your reports.</p>
           </div>
           <Button asChild variant="hero">
