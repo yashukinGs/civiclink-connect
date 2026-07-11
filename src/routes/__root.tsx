@@ -92,7 +92,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Help build a cleaner, safer, and smarter city. Report and track civic issues in seconds with CivicConnect.",
+          "CivicConnect is a smart citizen issue reporting platform. Report potholes, garbage, streetlights and more. Connecting Citizens. Solving Problems.",
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "CivicConnect" },
@@ -103,13 +103,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "twitter:description",
         content:
-          "Help build a cleaner, safer, and smarter city. Report and track civic issues in seconds with CivicConnect.",
+          "CivicConnect is a smart citizen issue reporting platform. Report potholes, garbage, streetlights and more. Connecting Citizens. Solving Problems.",
       },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8912a510-94b7-4426-a77b-7f8b878afcb5/id-preview-5334ddf7--83c1cb5f-edf2-4881-8b0c-2c4d99edb8fa.lovable.app-1780621831421.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8912a510-94b7-4426-a77b-7f8b878afcb5/id-preview-5334ddf7--83c1cb5f-edf2-4881-8b0c-2c4d99edb8fa.lovable.app-1780621831421.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/04f907f5-c545-46f7-a347-960fb8f53531" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/04f907f5-c545-46f7-a347-960fb8f53531" },
     ],
     links: [
-      { rel: "icon", type: "image/png", href: ccLogo.url },
       { rel: "apple-touch-icon", href: ccLogo.url },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
