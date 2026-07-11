@@ -208,7 +208,7 @@ function ReportIssue() {
     setSubmitting(true);
     try {
       const issue = await createIssue(
-        { title, category, priority, description, location, isAnonymous },
+        { title, category: finalCategory, priority, description, location, isAnonymous },
         attachments,
       );
 
