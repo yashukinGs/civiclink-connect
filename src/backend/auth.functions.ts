@@ -1,20 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
 
 /**
- * Admin access is code-based. There is a single administrator account backed
- * by a fixed internal email (never shown in the UI). The admin signs in with a
- * secret Access Code + password instead of an email address.
- *
- * - ADMIN_EMAIL      internal identity used to create the Supabase auth session
- * - ADMIN_CODE       the secret code only the administrator knows
- * - ADMIN_PASSWORD   the initial password set when the account is provisioned
+ * Admin access is code-based. Secrets live in server-side env vars (never in
+ * source). Configure ADMIN_EMAIL, ADMIN_CODE, ADMIN_PASSWORD, and
+ * ADMIN_REGISTRATION_CODE via the Lovable Cloud secrets store.
  */
-const ADMIN_EMAIL = "admin@civicconnect.app";
-const ADMIN_CODE = "CIVIC-ADMIN-2026";
-const ADMIN_PASSWORD = "CivicConnect@2026";
-// Secret code required to register a NEW admin account. Share only with
-// trusted authority personnel. Rotate by changing this constant.
-const ADMIN_REGISTRATION_CODE = "CIVIC-REGISTER-2026";
+function getAdminSecrets() {
+  const email = process.env.ADMIN_EMAIL;
+  const code = process.env.ADMIN_CODE;
+  const password = process.env.ADMIN_PASSWORD;
+  const registrationCode = process.env.ADMIN_REGISTRATION_CODE;
+  if (!email || !code || !password || !registrationCode) {
+    throw new Error("Admin secrets are not configured on the server.");
+  }
+  return { email, code, password, registrationCode };
+}
 
 // Make sure the single administrator account exists and holds the admin role.
 // Idempotent: if the account already exists its password is left untouched.
