@@ -2,10 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  MapPin,
   Upload,
   Send,
-  Crosshair,
   X,
   Loader2,
   FileText,
@@ -39,6 +37,7 @@ import {
   MAX_FILES,
   type Attachment,
 } from "@/lib/issues";
+import { LocationPicker } from "@/components/LocationPicker";
 
 export const Route = createFileRoute("/report")({
   component: ReportIssue,
@@ -166,22 +165,7 @@ function ReportIssue() {
     });
   };
 
-  const detectLocation = () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported on this device.");
-      return;
-    }
-    toast.loading("Detecting your location…", { id: "geo" });
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setLocation(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
-        toast.success("Location detected.", { id: "geo" });
-      },
-      () => toast.error("Could not detect location. Please enter it manually.", { id: "geo" }),
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
-  };
+
 
   const resetForm = () => {
     files.forEach((f) => f.previewUrl && URL.revokeObjectURL(f.previewUrl));
@@ -321,20 +305,7 @@ function ReportIssue() {
 
           <div className="space-y-1.5">
             <Label>Location</Label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Enter address or use GPS"
-                  className="pl-9"
-                />
-              </div>
-              <Button type="button" variant="glass" onClick={detectLocation}>
-                <Crosshair className="h-4 w-4" /> Detect
-              </Button>
-            </div>
+            <LocationPicker value={location} onChange={(addr: string) => setLocation(addr)} />
           </div>
 
           <div className="space-y-1.5">
