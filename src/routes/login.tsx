@@ -63,19 +63,34 @@ function Login() {
                 toast.error("Password is required.");
                 return;
               }
+              setLoading(true);
               try {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                const { tokenHash } = await cognitoLogin({ data: { email, password } });
+                const { error } = await supabase.auth.verifyOtp({
+                  token_hash: tokenHash,
+                  type: "magiclink",
+                });
                 if (error) {
-                  toast.error("Invalid email or password.");
+                  toast.error("Signed in with Cognito, but session bridge failed.");
                   return;
                 }
                 toast.success("Logged in! Redirecting…");
-                setTimeout(() => navigate({ to: destination }), 600);
-              } catch {
-                toast.error("Something went wrong. Please try again.");
+                setTimeout(() => navigate({ to: destination }), 500);
+              } catch (err) {
+                const msg = err instanceof Error ? err.message : "Login failed";
+                toast.error(
+                  /NotAuthorized|Incorrect|password/i.test(msg)
+                    ? "Invalid email or password."
+                    : /UserNotConfirmed/i.test(msg)
+                      ? "Please verify your email first (check your inbox for the code)."
+                      : msg,
+                );
+              } finally {
+                setLoading(false);
               }
             }}
           >
+
             <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
