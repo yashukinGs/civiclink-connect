@@ -37,7 +37,7 @@ function timeAgo(value: string) {
 function Dashboard() {
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
-  const { issues, loading: issuesLoading } = useMyIssues();
+  const { issues, loading: issuesLoading } = useAllIssues(!loading && isLoggedIn);
   const [name, setName] = useState<string>("");
 
   useEffect(() => {
