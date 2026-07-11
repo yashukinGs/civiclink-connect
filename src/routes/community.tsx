@@ -51,16 +51,19 @@ function resolvedInDays(created: string, updated: string) {
 function Community() {
   const [leaders, setLeaders] = useState<LeaderRow[]>([]);
   const [resolved, setResolved] = useState<ResolvedRow[]>([]);
+  const [allIssues, setAllIssues] = useState<AllIssueRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      const [lb, rr] = await Promise.all([
+      const [lb, rr, ai] = await Promise.all([
         supabase.rpc("get_leaderboard"),
         supabase.rpc("get_recent_resolved"),
+        supabase.rpc("get_all_issues_public"),
       ]);
       setLeaders((lb.data as LeaderRow[]) ?? []);
       setResolved((rr.data as ResolvedRow[]) ?? []);
+      setAllIssues((ai.data as AllIssueRow[]) ?? []);
       setLoading(false);
     };
     load();
