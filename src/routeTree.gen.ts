@@ -23,6 +23,7 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CommunityRouteImport } from './routes/community'
+import { Route as CognitoAuthRouteImport } from './routes/cognito-auth'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AdminRegisterRouteImport } from './routes/admin-register'
 import { Route as AdminDashboardRouteImport } from './routes/admin-dashboard'
@@ -105,6 +106,11 @@ const CommunityRoute = CommunityRouteImport.update({
   path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CognitoAuthRoute = CognitoAuthRouteImport.update({
+  id: '/cognito-auth',
+  path: '/cognito-auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnalyticsRoute = AnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -169,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/admin-dashboard': typeof AdminDashboardRouteWithChildren
   '/admin-register': typeof AdminRegisterRoute
   '/analytics': typeof AnalyticsRoute
+  '/cognito-auth': typeof CognitoAuthRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -195,6 +202,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/admin-register': typeof AdminRegisterRoute
   '/analytics': typeof AnalyticsRoute
+  '/cognito-auth': typeof CognitoAuthRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -223,6 +231,7 @@ export interface FileRoutesById {
   '/admin-dashboard': typeof AdminDashboardRouteWithChildren
   '/admin-register': typeof AdminRegisterRoute
   '/analytics': typeof AnalyticsRoute
+  '/cognito-auth': typeof CognitoAuthRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -252,6 +261,7 @@ export interface FileRouteTypes {
     | '/admin-dashboard'
     | '/admin-register'
     | '/analytics'
+    | '/cognito-auth'
     | '/community'
     | '/contact'
     | '/dashboard'
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-register'
     | '/analytics'
+    | '/cognito-auth'
     | '/community'
     | '/contact'
     | '/dashboard'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/admin-dashboard'
     | '/admin-register'
     | '/analytics'
+    | '/cognito-auth'
     | '/community'
     | '/contact'
     | '/dashboard'
@@ -333,6 +345,7 @@ export interface RootRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRouteWithChildren
   AdminRegisterRoute: typeof AdminRegisterRoute
   AnalyticsRoute: typeof AnalyticsRoute
+  CognitoAuthRoute: typeof CognitoAuthRoute
   CommunityRoute: typeof CommunityRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
@@ -449,6 +462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cognito-auth': {
+      id: '/cognito-auth'
+      path: '/cognito-auth'
+      fullPath: '/cognito-auth'
+      preLoaderRoute: typeof CognitoAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/analytics': {
       id: '/analytics'
       path: '/analytics'
@@ -556,6 +576,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDashboardRoute: AdminDashboardRouteWithChildren,
   AdminRegisterRoute: AdminRegisterRoute,
   AnalyticsRoute: AnalyticsRoute,
+  CognitoAuthRoute: CognitoAuthRoute,
   CommunityRoute: CommunityRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
