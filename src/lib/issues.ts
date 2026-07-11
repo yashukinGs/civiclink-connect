@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { IssuePriority, IssueStatus } from "@/lib/demo-data";
 import { uploadS3File, getS3DownloadUrl, deleteS3Object } from "@/lib/s3.functions";
+import { mirrorIssueToDynamo } from "@/lib/dynamodb.functions";
 
 export const BUCKET = "issue-images";
 export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -195,8 +196,28 @@ export async function createIssue(
     .single();
 
   if (error) throw error;
-  return rowToIssue(data as Record<string, unknown>);
+  const issue = rowToIssue(data as Record<string, unknown>);
+
+  // Fire-and-forget mirror to DynamoDB — must never break the UX
+  void mirrorIssueToDynamo({
+    data: {
+      ticket_id: issue.ticket_id,
+      title: issue.title,
+      category: issue.category,
+      priority: issue.priority,
+      description: issue.description,
+      location: issue.location,
+      status: issue.status,
+      is_anonymous: issue.is_anonymous,
+      image_url: issue.image_url,
+      attachments: issue.attachments,
+      created_at: issue.created_at,
+    },
+  }).catch((err) => console.warn("[DynamoDB mirror] skipped:", err?.message));
+
+  return issue;
 }
+
 
 export async function getIssueByTicket(ticket: string) {
   const { data, error } = await supabase.rpc("get_issue_by_ticket", {
