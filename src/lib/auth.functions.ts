@@ -70,3 +70,63 @@ export const verifyAdminCode = createServerFn({ method: "POST" })
     }
     return { email: ADMIN_EMAIL };
   });
+
+// Register a new administrator. The caller must supply the secret admin
+// registration code. On success the account is created (email auto-confirmed)
+// and granted the `admin` role.
+export const registerAdmin = createServerFn({ method: "POST" })
+  .inputValidator(
+    (data: { code: string; email: string; password: string; name?: string }) => data,
+  )
+  .handler(async ({ data }): Promise<{ ok: true; userId: string }> => {
+    const code = (data.code ?? "").trim().toUpperCase();
+    const email = (data.email ?? "").trim().toLowerCase();
+    const password = data.password ?? "";
+    const name = (data.name ?? "").trim();
+
+    if (code !== ADMIN_REGISTRATION_CODE) {
+      throw new Error("Invalid admin registration code.");
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error("A valid email is required.");
+    }
+    if (password.length < 8) {
+      throw new Error("Password must be at least 8 characters.");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Create the auth user (email pre-confirmed so they can sign in immediately).
+    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: name ? { name } : undefined,
+    });
+
+    if (createErr || !created?.user?.id) {
+      if (createErr && /already|exists|registered/i.test(createErr.message)) {
+        throw new Error("An account with this email already exists.");
+      }
+      throw new Error(createErr?.message ?? "Failed to create admin account.");
+    }
+
+    const userId = created.user.id;
+
+    // Grant admin role (idempotent).
+    const { data: existingRole } = await supabaseAdmin
+      .from("user_roles")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    if (!existingRole) {
+      const { error: roleErr } = await supabaseAdmin
+        .from("user_roles")
+        .insert({ user_id: userId, role: "admin" });
+      if (roleErr) throw new Error(roleErr.message);
+    }
+
+    return { ok: true, userId };
+  });
