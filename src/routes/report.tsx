@@ -222,6 +222,10 @@ function ReportIssue() {
       );
 
       toast.success(`Complaint submitted! Your ID is ${issue.ticket_id}.`);
+      toast.info(
+        "Check your inbox — AWS will send a one-time \"Confirm subscription\" email. Click it once so we can notify you about future status updates.",
+        { duration: 10000 },
+      );
       resetForm();
       navigate({ to: "/track", search: { id: issue.ticket_id } });
     } catch (err) {
