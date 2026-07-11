@@ -81,12 +81,13 @@ export const registerAdmin = createServerFn({ method: "POST" })
     (data: { code: string; email: string; password: string; name?: string }) => data,
   )
   .handler(async ({ data }): Promise<{ ok: true; userId: string }> => {
+    const { registrationCode: ADMIN_REGISTRATION_CODE } = getAdminSecrets();
     const code = (data.code ?? "").trim().toUpperCase();
     const email = (data.email ?? "").trim().toLowerCase();
     const password = data.password ?? "";
     const name = (data.name ?? "").trim();
 
-    if (code !== ADMIN_REGISTRATION_CODE) {
+    if (code !== ADMIN_REGISTRATION_CODE.toUpperCase()) {
       throw new Error("Invalid admin registration code.");
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
