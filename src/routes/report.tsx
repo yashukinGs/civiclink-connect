@@ -322,7 +322,7 @@ function ReportIssue() {
 
           <div className="space-y-1.5">
             <Label>Location</Label>
-            <LocationPicker value={location} onChange={(addr) => setLocation(addr)} />
+            <LocationPicker value={location} onChange={(addr: string) => setLocation(addr)} />
           </div>
 
           <div className="space-y-1.5">
