@@ -172,6 +172,7 @@ function ReportIssue() {
     files.forEach((f) => f.previewUrl && URL.revokeObjectURL(f.previewUrl));
     setTitle("");
     setCategory("");
+    setCustomCategory("");
     setPriority("Medium");
     setDescription("");
     setLocation("");
