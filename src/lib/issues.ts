@@ -174,7 +174,10 @@ export async function createIssue(
   attachments: Attachment[],
 ): Promise<IssueRow> {
   const { data: userData, error: userErr } = await supabase.auth.getUser();
-  if (userErr || !userData.user) throw new Error("You must be signed in to report an issue.");
+  if (userErr) {
+    throw new Error(`Could not verify your session: ${userErr.message}`);
+  }
+  if (!userData.user) throw new Error("You must be signed in to report an issue.");
 
   const firstImage = attachments.find((a) => isImageType(a.type));
 
@@ -195,7 +198,17 @@ export async function createIssue(
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error("[createIssue] insert failed:", error);
+    const parts = [error.message, error.details, error.hint].filter(Boolean);
+    const codeSuffix = error.code ? ` (code ${error.code})` : "";
+    const wrapped = new Error(
+      `${parts.join(" — ") || "Failed to save your complaint."}${codeSuffix}`,
+    );
+    (wrapped as Error & { cause?: unknown }).cause = error;
+    throw wrapped;
+  }
+  if (!data) throw new Error("Complaint was not saved. Please try again.");
   const issue = rowToIssue(data as Record<string, unknown>);
 
   // Fire-and-forget mirror to DynamoDB — must never break the UX
