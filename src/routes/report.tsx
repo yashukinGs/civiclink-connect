@@ -220,9 +220,21 @@ function ReportIssue() {
       resetForm();
       navigate({ to: "/track", search: { id: issue.ticket_id } });
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Something went wrong. Please try again.",
-      );
+      console.error("[report] submit failed:", err);
+      let message = "Something went wrong. Please try again.";
+      if (err instanceof Error && err.message) {
+        message = err.message;
+      } else if (typeof err === "string" && err) {
+        message = err;
+      } else if (err && typeof err === "object") {
+        const e = err as { message?: unknown; details?: unknown; hint?: unknown; code?: unknown };
+        const parts = [e.message, e.details, e.hint]
+          .filter((v): v is string => typeof v === "string" && v.length > 0);
+        if (parts.length) {
+          message = parts.join(" — ") + (typeof e.code === "string" ? ` (code ${e.code})` : "");
+        }
+      }
+      toast.error(message, { duration: 8000 });
     } finally {
       setSubmitting(false);
     }
