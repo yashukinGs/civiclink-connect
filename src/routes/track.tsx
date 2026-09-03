@@ -44,7 +44,7 @@ function TrackIssue() {
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
 
-  const [query, setQuery] = useState(id);
+  const [query, setQuery] = useState(id ?? "");
   const [issue, setIssue] = useState<TrackedIssue | null>(null);
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
