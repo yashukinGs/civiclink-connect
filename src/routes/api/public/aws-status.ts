@@ -5,19 +5,30 @@ import { SNSClient, GetTopicAttributesCommand } from "@aws-sdk/client-sns";
 
 async function checkCognito() {
   const clientId = process.env['COGNITO_CLIENT_ID'];
-  const userPoolId = process.env['COGNITO_USER_POOL_ID'];
   const region = process.env['AWS_REGION'];
-  if (!clientId || !userPoolId || !region) return { status: "MISSING_CONFIG" };
+  if (!clientId || !region) return { status: "MISSING_CONFIG" };
   const endpoint = `https://cognito-idp.${region}.amazonaws.com/`;
+  // Use an unauthenticated public action so we only verify the app client exists.
   const res = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-amz-json-1.1",
-      "X-Amz-Target": "AWSCognitoIdentityProviderService.DescribeUserPoolClient",
+      "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
     },
-    body: JSON.stringify({ UserPoolId: userPoolId, ClientId: clientId }),
+    body: JSON.stringify({
+      AuthFlow: "USER_PASSWORD_AUTH",
+      ClientId: clientId,
+      AuthParameters: { USERNAME: "test@civicconnect.local", PASSWORD: "TestPass123!" },
+    }),
   });
   const text = await res.text();
+  // Client exists if Cognito complains about the user, not the client.
+  if (text.includes("User pool client") && text.includes("does not exist")) {
+    return { status: "CLIENT_NOT_FOUND", detail: text };
+  }
+  if (text.includes("Incorrect username or password") || text.includes("User does not exist")) {
+    return { status: "OK", detail: "App client exists (login would proceed to credential check)" };
+  }
   if (!res.ok) return { status: "ERROR", detail: text };
   return { status: "OK" };
 }
