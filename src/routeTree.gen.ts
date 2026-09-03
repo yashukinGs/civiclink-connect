@@ -35,6 +35,7 @@ import { Route as AdminDashboardUsersRouteImport } from './routes/admin-dashboar
 import { Route as AdminDashboardOfficersRouteImport } from './routes/admin-dashboard.officers'
 import { Route as AdminDashboardComplaintsRouteImport } from './routes/admin-dashboard.complaints'
 import { Route as AdminDashboardAnalyticsRouteImport } from './routes/admin-dashboard.analytics'
+import { Route as ApiPublicAwsStatusRouteImport } from './routes/api/public/aws-status'
 
 const WorksRoute = WorksRouteImport.update({
   id: '/works',
@@ -167,6 +168,11 @@ const AdminDashboardAnalyticsRoute = AdminDashboardAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AdminDashboardRoute,
 } as any)
+const ApiPublicAwsStatusRoute = ApiPublicAwsStatusRouteImport.update({
+  id: '/api/public/aws-status',
+  path: '/api/public/aws-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/admin-dashboard/officers': typeof AdminDashboardOfficersRoute
   '/admin-dashboard/users': typeof AdminDashboardUsersRoute
   '/admin-dashboard/': typeof AdminDashboardIndexRoute
+  '/api/public/aws-status': typeof ApiPublicAwsStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -222,6 +229,7 @@ export interface FileRoutesByTo {
   '/admin-dashboard/officers': typeof AdminDashboardOfficersRoute
   '/admin-dashboard/users': typeof AdminDashboardUsersRoute
   '/admin-dashboard': typeof AdminDashboardIndexRoute
+  '/api/public/aws-status': typeof ApiPublicAwsStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/admin-dashboard/officers': typeof AdminDashboardOfficersRoute
   '/admin-dashboard/users': typeof AdminDashboardUsersRoute
   '/admin-dashboard/': typeof AdminDashboardIndexRoute
+  '/api/public/aws-status': typeof ApiPublicAwsStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -281,6 +290,7 @@ export interface FileRouteTypes {
     | '/admin-dashboard/officers'
     | '/admin-dashboard/users'
     | '/admin-dashboard/'
+    | '/api/public/aws-status'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/admin-dashboard/officers'
     | '/admin-dashboard/users'
     | '/admin-dashboard'
+    | '/api/public/aws-status'
   id:
     | '__root__'
     | '/'
@@ -336,6 +347,7 @@ export interface FileRouteTypes {
     | '/admin-dashboard/officers'
     | '/admin-dashboard/users'
     | '/admin-dashboard/'
+    | '/api/public/aws-status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -360,6 +372,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   TrackRoute: typeof TrackRoute
   WorksRoute: typeof WorksRoute
+  ApiPublicAwsStatusRoute: typeof ApiPublicAwsStatusRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -546,6 +559,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardAnalyticsRouteImport
       parentRoute: typeof AdminDashboardRoute
     }
+    '/api/public/aws-status': {
+      id: '/api/public/aws-status'
+      path: '/api/public/aws-status'
+      fullPath: '/api/public/aws-status'
+      preLoaderRoute: typeof ApiPublicAwsStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -591,6 +611,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   TrackRoute: TrackRoute,
   WorksRoute: WorksRoute,
+  ApiPublicAwsStatusRoute: ApiPublicAwsStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
