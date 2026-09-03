@@ -61,8 +61,13 @@ async function cognitoCall<TResponse>(
 
   if (!res.ok) {
     const err = (parsed ?? {}) as CognitoErrorPayload;
-    const msg =
+    let msg =
       err.message || err.Message || err.__type || `Cognito ${action} failed`;
+    if (/does not exist/i.test(msg) || err.__type === "ResourceNotFoundException") {
+      msg =
+        "Login service is misconfigured: the Cognito app client ID/region is invalid. " +
+        "Update COGNITO_CLIENT_ID (and AWS_REGION) to match an existing app client in your User Pool.";
+    }
     throw new Error(msg);
   }
 

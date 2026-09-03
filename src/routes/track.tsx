@@ -11,7 +11,7 @@ import { getIssueByTicket, attachmentsForIssue, type Attachment } from "@/lib/is
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/track")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { id?: string } => ({
     id: typeof search.id === "string" ? search.id : "",
   }),
   component: TrackIssue,
@@ -44,7 +44,7 @@ function TrackIssue() {
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
 
-  const [query, setQuery] = useState(id);
+  const [query, setQuery] = useState(id ?? "");
   const [issue, setIssue] = useState<TrackedIssue | null>(null);
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
